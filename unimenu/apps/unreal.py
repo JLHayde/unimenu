@@ -88,16 +88,13 @@ class MenuNodeUnreal(MenuNodeAbstract):
         return entry
 
     def _setup_separator(self, parent_app_node: unreal.ToolMenu = None) -> None:
-        # todo not working yet
         """
         add a separator to the script menu
 
         parent_app_node: the Unreal parent menu to parent the new menu to
         """
-
-        # see https://docs.unrealengine.com/4.27/en-US/PythonAPI/class/ToolMenu.html
-        # todo what is diff with dynamic section?
-        return parent_app_node.add_section(section_name=self.label + "_section", label=self.label + "_label", **self.kwargs)
+        section_name = self.kwargs.pop("section_name", self.label + "_section")
+        return parent_app_node.add_section(section_name=section_name, label=self.label, **self.kwargs)
 
     def teardown(self):
         """remove from menu"""
