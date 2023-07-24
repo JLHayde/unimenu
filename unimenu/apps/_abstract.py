@@ -26,7 +26,7 @@ class MenuNode(object):
         :param data: custom data to store in the node, this is not used by unimenu, e.g. category, tags, etc
         :param parent_path: used to parent the tree to a parent, only used by the root-node
         :param app_node: HELPER linking the app menu node created by a MenuNode instance, tries to create a bidirectional link
-        :param parent: HELPER linking the parent menu item, automatically set on child nodes when loaded from a config
+        :param parent: HELPER linking the parent menu item, automatically set on children created from the 'items' kwarg
         """
 
         # config data
@@ -35,15 +35,13 @@ class MenuNode(object):
         self.icon = icon or ""
         self.tooltip = tooltip or ""
         self.separator = separator or False
-        items = items or []
-        self.items: list[MenuNodeAbstract] = [self.__class__(**item) for item in items]
         self.kwargs = kwargs or {}
         self.data = data or {}
         self.id = id or None
 
         # only the root node needs parent_path
         if parent_path:
-            self.parent_path = parent_path.replace(" ", "_")
+            self.parent_path: str = parent_path.replace(" ", "_")
         else:
             self.parent_path = None
         # todo get parent path method
@@ -58,6 +56,10 @@ class MenuNode(object):
 
         self._default_id()
 
+        # since we pass parent, create items at end of init, so we first set all parent(self) attrs
+        items = items or []
+        self.items: list[MenuNodeAbstract] = [self.__class__(**item, parent=self) for item in items]
+
     def _default_id(self):
         # todo ideally should be unique
         
@@ -71,6 +73,9 @@ class MenuNode(object):
 
         label = re.sub('[^0-9a-zA-Z]+', '_', label)  # replace non alphanumeric with _
 
+        # add parent path to the id. ensures unique ids.
+        # note that in e.g. unreal, the "name" is a type of id, that needs to be unique. but only one level deep.
+        # so using id for name might result in repeated parent names. e.g. "parentA.ParentA_menuB"
         parent_names = []
         parent = self.parent
         while parent:
@@ -79,6 +84,9 @@ class MenuNode(object):
         parent_names.reverse()
         parent_names.append(label)
         self.id = "_".join(parent_names)
+        # todo update this when parent changes, change to property
+        # but if we rely on id to identify a node, then changing it when parent changes is bad
+        # inform user that this string can change, they can save a pointer to the python instance instead
 
     @property
     def children(self):
@@ -99,7 +107,7 @@ class MenuNode(object):
 
     @property
     def all_command_nodes(self):
-        """return every menu entry that has a command"""
+        """return: every menu entry that has a command"""
         commands = []
         for child in self.children:
             if child.command:
@@ -108,7 +116,7 @@ class MenuNode(object):
         return commands
 
     def root(self):
-        """Return the root node of the menu-tree"""
+        """return: the root node of the menu-tree"""
         # we use isinstance since sometimes parent is a string (or other type)
         # e.g. when the menu is loaded from a config file, the root node might have a string as parent
         if self.parent and isinstance(self.parent, MenuNode):
@@ -116,7 +124,7 @@ class MenuNode(object):
         return self
 
     def __dict__ (self):
-        # used to save back to a config file
+        """return: a dict representation of this menu-node, used to save to a config file """
         config = {}
         if self.label:
             config["label"] = self.label
@@ -199,7 +207,8 @@ class MenuNodeAbstract(MenuNode, ABC):
     def setup(self, parent_app_node=None, backlink=True):
         """
         Instantiate a menu item in the app from the menu node data
-        parent: app menu to parent to, not a MenuNode!
+
+        parent_app_node: app menu node to parent to, not a (uni)MenuNode!
         backlink: if True, add an attribute to the app node instance to the app node
         """
         parent_app_node = parent_app_node or self._default_root_parent

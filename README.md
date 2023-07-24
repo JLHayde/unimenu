@@ -14,9 +14,9 @@ For more info read the [wiki](https://github.com/hannesdelbeke/unimenu/wiki)
 
 If you use Blender, you can try the [unimenu_addon](https://github.com/hannesdelbeke/unimenu_addon)
 
-<img src="samples/menu_screen_maya.jpg" width="400"/> <img src="samples/menu_screen_unreal5.jpg" width="400"/> <img src="samples/menu_screen_krita.jpg" width="400"/> <img src="samples/menu_screen_substance_painter.jpg" width="400"/>
-<img src="samples/menu_screen_nuke.jpg" width="400"/> <img src="samples/menu_screen_katana.jpg" width="400"/>
-<img src="samples/menu_screen_mari.jpg" width="400"/>
+<img src="dev/unimenu_samples/menu_screen_maya.jpg" width="400"/> <img src="dev/unimenu_samples/menu_screen_unreal5.jpg" width="400"/> <img src="dev/unimenu_samples/menu_screen_krita.jpg" width="400"/> <img src="dev/unimenu_samples/menu_screen_substance_painter.jpg" width="400"/>
+<img src="dev/unimenu_samples/menu_screen_nuke.jpg" width="400"/> <img src="dev/unimenu_samples/menu_screen_katana.jpg" width="400"/>
+<img src="dev/unimenu_samples/menu_screen_mari.jpg" width="400"/>
 # how to use
 
 ### load from config (YAML & JSON)
@@ -100,3 +100,15 @@ feel free to create a PR to help out.
 
 to add support for your favorite software, add a python module named after the software with a setup_menu function
 where possible stick to the windows menu [design guidelines](https://learn.microsoft.com/en-us/previous-versions/windows/desktop/bb226797(v=vs.85))
+
+- [ ] add editable install instructions
+
+### samples
+You can install the unimenu samples with
+```bash
+pip install git+https://github.com/hannesdelbeke/unimenu@main#subdirectory=dev
+```
+then you can run them with e.g.
+```python
+import unimenu_samples.any_dcc_test
+```
