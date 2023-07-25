@@ -142,8 +142,8 @@ class MenuNodeUnreal(MenuNodeAbstract):
         """
         if self.parent:
             start = self.parent.items.index(self)
-            slice = self.parent.items[:start]
-            for i in reversed(slice):
+            items_slice = self.parent.items[:start]
+            for i in reversed(items_slice):
                 # Loop up the items to find a seperator and get its section name
                 if i.separator:
                     return i.kwargs.get("section_name", i.label+"_section")
